@@ -1,0 +1,76 @@
+ function[W, W0] = Naive_Bayes(X, Y)
+ 
+ 
+
+%-------------------------------------%
+%      Model                          %
+%-------------------------------------%
+
+% y(w, x) = w'x + w0.
+
+N = size(Y,1);  % Number of samples
+N1 = 0;         % Number of samples in the class 1.
+
+
+for i = 1 : size(Y,1)
+   if Y(i) == 1
+       N1 = N1 + 1;
+   end
+end
+
+N2 = size(Y,1) - N1; % Number of samples in the class 2.
+
+
+
+u1 = 0;
+
+for n = 1 : N
+    u1 = u1 + Y(n) * X(n, :);
+end
+u1 = 1 / N1 * u1;
+
+
+
+u2 = 0;
+
+for n = 1 : N
+    u2 = u2 + (1 - Y(n)) * X(n, :);
+end
+u2 = 1 / N2 * u2;
+
+
+
+S1 = 0;
+
+for n = 1 : N1
+    S1 = S1 + (X(n,:) - u1)' * (X(n,:) - u1);
+end
+S1 = 1 / N1 * S1;
+
+
+
+S2 = 0;
+
+for n = 1 : N2
+    S2 = S2 + (X(n,:) - u2)' * (X(n,:) - u2);
+end
+S2 = 1 / N2 * S2;
+
+
+
+
+S = N1 / N * S1 + N2 / N * S2;
+P_C1 = N1 / N;
+P_C2 = 1 - P_C1;
+
+
+
+%-------------------------------------%
+%      Training                       %
+%-------------------------------------%
+
+
+
+W = S \ (u1' - u2');
+W0 = -1/2 * u1 * inv(S) * u1' + 1/2 * u2 * inv(S) * u2' + log(P_C1 / P_C2);
+
